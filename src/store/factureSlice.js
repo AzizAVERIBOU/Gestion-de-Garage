@@ -6,7 +6,9 @@ const initialState = {
   erreur: null
 };
 
-// Fonction pour générer un numéro de facture unique
+// Fonction pour générer un numéro de facture unique on chercher comment generer un numero de facture unique
+// on genere un numero de facture unique avec l'annee, le mois et un numero sequentiel
+// par exemple FAC-2403-0001 correspond a la facture numero 1 generée en 2024 au mois de mars
 const genererNumeroFacture = () => {
   const date = new Date();
   const annee = date.getFullYear().toString().slice(-2); // Prend les 2 derniers chiffres de l'année
@@ -16,31 +18,31 @@ const genererNumeroFacture = () => {
   return `FAC-${annee}${mois}-${sequence}`;
 };
 
-const factureSlice = createSlice({
+const factureSlice = createSlice({ // on cree un slice pour les factures
   name: 'facture',
   initialState,
   reducers: {
-    ajouterFacture: (state, action) => {
+    ajouterFacture: (state, action) => { // on ajoute une facture
       const nouvelleFacture = {
         ...action.payload,
-        id: genererNumeroFacture(), // Utilise le nouveau format de numéro de facture
+        id: genererNumeroFacture(), 
         dateCreation: new Date().toISOString()
       };
       state.factures.push(nouvelleFacture);
     },
-    definirFactures: (state, action) => {
+    definirFactures: (state, action) => { // on definit les factures
       state.factures = action.payload;
     },
     definirChargement: (state, action) => {
       state.chargement = action.payload;
     },
-    definirErreur: (state, action) => {
+    definirErreur: (state, action) => { // on definit les erreurs
       state.erreur = action.payload;
     }
   }
 });
 
-export const {
+export const {  // on exporte toutes les actions
   ajouterFacture,
   definirFactures,
   definirChargement,
@@ -48,7 +50,7 @@ export const {
 } = factureSlice.actions;
 
 export const selectionnerToutesLesFactures = (state) => state.facture.factures;
-export const selectionnerFacturesParUtilisateur = (state, userId) => 
+export const selectionnerFacturesParUtilisateur = (state, userId) =>  // on selectionne les factures par utilisateur
   state.facture.factures.filter(f => f.userId === userId);
 
 export default factureSlice.reducer; 

@@ -21,6 +21,7 @@ const Factures = () => {
   };
 
   return (
+    // on affiche la page des factures en utilisant bootstrap 
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={10}>

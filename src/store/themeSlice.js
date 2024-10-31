@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Créer un thème personnalisé
+// Créer un thème personnalisé pour donner un style plus cool 
 
-export const initializeTheme = createAsyncThunk(
+export const initializeTheme = createAsyncThunk( // on cree une action asynchrone pour initialiser le theme avec redux thunk
   'theme/initialize',
   async () => {
     // Simuler une requête asynchrone pour charger les styles
@@ -47,11 +47,11 @@ const themeSlice = createSlice({
       .addCase(initializeTheme.pending, (state) => {  // Gestion du chargement
         state.loading = true;
       })
-      .addCase(initializeTheme.fulfilled, (state, action) => {
+      .addCase(initializeTheme.fulfilled, (state, action) => { // gestion de la reponse de l'action asynchrone
         state.loading = false;
         state.colors = action.payload.colors;
       })
-      .addCase(initializeTheme.rejected, (state, action) => {  // Gestion de l'erreur
+      .addCase(initializeTheme.rejected, (state, action) => {  // gestion de l'erreur
         state.loading = false;
         state.error = action.error.message;
       });

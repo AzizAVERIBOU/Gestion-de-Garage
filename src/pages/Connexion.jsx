@@ -51,7 +51,7 @@ const Connexion = () => {
       return;
     }
 
-    try {
+    try { // on recupere les donnees de l'api pour la connexion
       const response = await fetch('https://dummyjson.com/auth/login', {
         method: 'POST',
         headers: {
@@ -63,16 +63,16 @@ const Connexion = () => {
         })
       });
 
-      const data = await response.json(); 
+      const data = await response.json(); // on attend la reponse de l'api
 
-      if (response.ok) {
+      if (response.ok) { // si la reponse est bonne on definit l'utilisateur
         const newUser = { ...data, type: 'client' };
         dispatch(definirUtilisateur(newUser));
         navigate('/client/tableau-de-bord');
-      } else {
+      } else { // si la reponse n'est pas correspondante on lance une erreur
         throw new Error('Identifiants invalides');
       }
-    } catch (err) {
+    } catch (err) { // si une erreur survient on affiche un message d'erreur
       console.error('Erreur détaillée:', err);
       setError('Identifiants invalides. Veuillez réessayer.');
     } finally {
@@ -80,7 +80,7 @@ const Connexion = () => {
     }
   };
 
-  return (
+  return ( // on gere la page de connexion avec react-bootstrap et react-fontawesome
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8} lg={6}>

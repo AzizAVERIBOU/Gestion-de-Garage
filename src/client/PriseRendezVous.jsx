@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faCalendarAlt, 
-  faArrowLeft, 
-  faCar, 
-  faArrowRight, 
-  faUser, 
-  faCalendarCheck,
-  faSpinner 
-} from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faArrowLeft, faCar, faArrowRight, faUser, faCalendarCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { ajouterRendezVous } from '../store/rendezVousSlice';
 import { selectionnerToutesLesDisponibilites } from '../store/disponibiliteSlice';
 import '../styles/PriseRendezVous.css';
+import mecanos from '../datas/mecanos';
 
 const PriseRendezVous = () => {
   const navigate = useNavigate();
@@ -40,32 +33,8 @@ const PriseRendezVous = () => {
   });
   const [error, setError] = useState('');
 
-  const mecaniciens = [
-    {
-      id: 1,
-      nom: "Dupont",
-      prenom: "Jean",
-      specialite: "Mécanique générale",
-      experience: "10 ans"
-    },
-    {
-      id: 2,
-      nom: "Martin",
-      prenom: "Sophie",
-      specialite: "Diagnostic électronique",
-      experience: "8 ans"
-    },
-    {
-      id: 3,
-      nom: "Garcia",
-      prenom: "Miguel",
-      specialite: "Carrosserie",
-      experience: "15 ans"
-    }
-  ];
-
   // Filtrer les mécaniciens disponibles
-  const mecaniciensDisponibles = mecaniciens.filter(mecanicien => {
+  const mecaniciensDisponibles = mecanos.filter(mecanicien => {
     // Vérifier si le mécanicien a des horaires configurés
     return disponibilites[mecanicien.id] && Object.keys(disponibilites[mecanicien.id]).length > 0;
   });

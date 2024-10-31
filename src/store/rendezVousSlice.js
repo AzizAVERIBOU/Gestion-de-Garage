@@ -1,16 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+const initialState = { // on definit l'etat initial pour les rendez-vous
   rendezVous: [],
-  loading: false,
-  error: null
+  loading: false, // pour gerer le chargement
+  error: null // pour gerer les erreurs
 };
 
 const rendezVousSlice = createSlice({
   name: 'rendezVous',
   initialState,
   reducers: {
-    // Ajouter un nouveau rendez-vous
+    // pour ajouter un nouveau rendez-vous
     ajouterRendezVous: (state, action) => {
       console.log('Action ajouterRendezVous:', action.payload);
       const nouveauRendezVous = {
@@ -23,7 +23,7 @@ const rendezVousSlice = createSlice({
       state.rendezVous.push(nouveauRendezVous);
     },
 
-    // Mettre à jour le statut d'un rendez-vous (accepté, refusé, etc.)
+    // pour mettre a jour le statut d'un rendez-vous (accepté, refusé, etc.)
     mettreAJourStatutRendezVous: (state, action) => {
       const { id, status, details, raisonRefus } = action.payload;
       const rdv = state.rendezVous.find(r => r.id === id);
@@ -42,7 +42,7 @@ const rendezVousSlice = createSlice({
       }
     },
 
-    // Annuler un rendez-vous
+    // pour annuler un rendez-vous
     annulerRendezVous: (state, action) => {
       const rdv = state.rendezVous.find(r => r.id === action.payload);
       if (rdv) {
@@ -50,19 +50,19 @@ const rendezVousSlice = createSlice({
       }
     },
 
-    // Définir l'état de chargement
+    // pour definir l'etat de chargement
     definirChargement: (state, action) => {
       state.loading = action.payload;
     },
 
-    // Définir une erreur
+    // pour definir une erreur
     definirErreur: (state, action) => {
       state.error = action.payload;
     }
   }
 });
 
-// Export des actions avec les nouveaux noms
+// on exporte toutes les actions
 export const {
   ajouterRendezVous,
   mettreAJourStatutRendezVous,
@@ -71,11 +71,14 @@ export const {
   definirErreur
 } = rendezVousSlice.actions;
 
-// Sélecteurs pour accéder aux données
+  // on selectionne tous les rendez-vous
 export const selectionnerTousLesRendezVous = (state) => state.rendezVous.rendezVous;
+// on selectionne les rendez-vous par utilisateur
 export const selectionnerRendezVousParUtilisateur = (state, userId) => 
   state.rendezVous.rendezVous.filter(rdv => rdv.userId === userId);
+// on selectionne le chargement
 export const selectionnerChargement = (state) => state.rendezVous.loading;
+// on selectionne les erreurs pour les rendez-vous
 export const selectionnerErreur = (state) => state.rendezVous.error;
 
-export default rendezVousSlice.reducer; 
+export default rendezVousSlice.reducer;  

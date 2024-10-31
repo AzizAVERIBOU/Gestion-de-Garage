@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  methodesEnregistrees: {}, // { userId: [{ id, numeroCarte, dateExpiration, nomCarte }] }
+  methodesEnregistrees: {}, // on definit un objet pour les methodes de paiement qui contient l'id de l'utilisateur, le numero de carte, la date d'expiration et le nom de la carte
   chargement: false,
   erreur: null
 };
@@ -10,13 +10,13 @@ const paiementSlice = createSlice({
   name: 'paiement',
   initialState,
   reducers: {
-    // Ajouter une nouvelle méthode de paiement
+    // pour ajouter une nouvelle methode de paiement
     ajouterMethodePaiement: (state, action) => {
       const { userId, methodePaiement } = action.payload;
       if (!state.methodesEnregistrees[userId]) {
         state.methodesEnregistrees[userId] = [];
       }
-      // Masquer le numéro de carte sauf les 4 derniers chiffres
+      // on masque le numero de carte sauf les 4 derniers chiffres
       const carteMasquee = {
         ...methodePaiement,
         id: Date.now(),
@@ -25,7 +25,7 @@ const paiementSlice = createSlice({
       state.methodesEnregistrees[userId].push(carteMasquee);
     },
 
-    // Supprimer une méthode de paiement
+    // pour supprimer une methode de paiement
     supprimerMethodePaiement: (state, action) => {
       const { userId, methodePaiementId } = action.payload;
       if (state.methodesEnregistrees[userId]) {
@@ -34,19 +34,19 @@ const paiementSlice = createSlice({
       }
     },
 
-    // Gérer le chargement
+    // pour gerer le chargement
     definirChargement: (state, action) => {
       state.chargement = action.payload;
     },
 
-    // Gérer les erreurs
+    // pour gerer les erreurs
     definirErreur: (state, action) => {
       state.erreur = action.payload;
     }
   }
 });
 
-// Export des actions
+// on exporte toutes les actions
 export const {
   ajouterMethodePaiement,
   supprimerMethodePaiement,
@@ -54,7 +54,7 @@ export const {
   definirErreur
 } = paiementSlice.actions;
 
-// Sélecteur pour récupérer les méthodes de paiement d'un utilisateur
+// on selectionne les methodes de paiement d'un utilisateur
 export const selectionnerMethodesPaiementParUtilisateur = (state, userId) => 
   state.paiement.methodesEnregistrees[userId] || [];
 

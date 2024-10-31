@@ -1,14 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  disponibilites: {
-    // Structure: { 
-    //   mecanicienId: {
-    //     "2024-03-20": ["09:00", "09:30", ...],
-    //     "2024-03-21": ["10:00", "10:30", ...]
-    //   }
-    // }
-  },
+  disponibilites: {},
   chargement: false,
   erreur: null
 };
@@ -43,7 +36,7 @@ const disponibiliteSlice = createSlice({
       state.disponibilites[mecanicienId][date] = creneaux;
     },
 
-    // Réserver un créneau
+    // pour reserver un créneau
     reserverCreneau: (state, action) => {
       const { mecanicienId, date, heure } = action.payload;
       if (state.disponibilites[mecanicienId]?.[date]) {
@@ -52,7 +45,7 @@ const disponibiliteSlice = createSlice({
       }
     },
 
-    // Libérer un créneau (en cas d'annulation)
+    // pour liberer un créneau (en cas d'annulation)
     libererCreneau: (state, action) => {
       const { mecanicienId, date, heure } = action.payload;
       if (state.disponibilites[mecanicienId]?.[date]) {
@@ -63,19 +56,19 @@ const disponibiliteSlice = createSlice({
       }
     },
 
-    // Gérer le chargement
+    // pour gerer le chargement
     definirChargement: (state, action) => {
       state.chargement = action.payload;
     },
 
-    // Gérer les erreurs
+    // pour gerer les erreurs
     definirErreur: (state, action) => {
       state.erreur = action.payload;
     }
   }
 });
 
-// Export des actions
+// on exporte toutes les actions
 export const {
   definirDisponibilites,
   genererCreneaux,
@@ -85,7 +78,7 @@ export const {
   definirErreur
 } = disponibiliteSlice.actions;
 
-// Sélecteurs
+// on selectionne les disponibilites pour un mecanicien et une date
 export const selectionnerDisponibilitesMecanicien = (state, mecanicienId, date) => 
   state.disponibilite.disponibilites[mecanicienId]?.[date] || [];
 
@@ -93,7 +86,7 @@ export const selectionnerToutesLesDisponibilites = (state) => state.disponibilit
 export const selectionnerChargement = (state) => state.disponibilite.chargement;
 export const selectionnerErreur = (state) => state.disponibilite.erreur;
 
-// Vérifier si un créneau est disponible
+// on verifie si un créneau est disponible
 export const estCreneauDisponible = (state, mecanicienId, date, heure) => {
   const disponibilites = state.disponibilite.disponibilites[mecanicienId]?.[date] || [];
   return disponibilites.includes(heure);

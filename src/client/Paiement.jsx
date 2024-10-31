@@ -18,7 +18,7 @@ const Paiement = () => {
   const montantAPayer = location.state?.montant || '';
   const rdvId = location.state?.rdvId;
 
-  // Trouver le rendez-vous concerné
+  // on cherche le rendez vous en fonction de l'id du rendez vous
   const rdvConcerne = rendezVous.find(rdv => rdv.id === rdvId);
 
   const [paiement, setPaiement] = useState({
@@ -46,12 +46,12 @@ const Paiement = () => {
     e.preventDefault();
     
     try {
-      // Calculer les bénéfices (15% pour le mécanicien)
+      // les benefices de mecano sont de 15% comme il demande
       const montantTotal = parseFloat(montantAPayer);
       const montantMecanicien = montantTotal * 0.15; // 15% pour le mécanicien
-      const beneficesGarage = montantTotal * 0.85; // 85% pour le garage
+      const beneficesGarage = montantTotal * 0.85; // le 85% on met ca pour le garage
 
-      // Générer une facture avec les informations du véhicule et les bénéfices
+      // on generefacture avec les informations du véhicule et les bénéfices
       const facture = {
         id: `F-${Date.now()}`,
         date: new Date().toISOString(),
@@ -74,7 +74,7 @@ const Paiement = () => {
         status: 'payée',
         dateRdv: rdvConcerne.date,
         heureRdv: rdvConcerne.heure,
-        // Ajouter les détails du paiement
+        // on ajoute les details du paiement
         paiement: {
           date: new Date().toISOString(),
           methode: useMethodeEnregistree ? 'carte enregistrée' : 'nouvelle carte',
@@ -82,17 +82,17 @@ const Paiement = () => {
         }
       };
 
-      // Ajouter la facture au store (sera disponible pour le client et le mécanicien)
+      // on ajoute la facture au store (sera disponible pour le client et le mécanicien)
       dispatch(ajouterFacture(facture));
 
-      // Mettre à jour le statut du rendez-vous
+      // on met a jour le statut du rendez vous
       dispatch(mettreAJourStatutRendezVous({
         id: rdvId,
         status: 'payé',
         facture: facture
       }));
 
-      // Si l'utilisateur veut sauvegarder la carte
+      // si l'utilisateur veut sauvegarder la carte
       if (sauvegarderCarte) {
         dispatch(ajouterMethodePaiement({
           userId: user.id,
@@ -104,7 +104,7 @@ const Paiement = () => {
         }));
       }
 
-      // Rediriger vers la page des factures
+      // on redirige vers la page des factures
       navigate('/client/factures');
     } catch (err) {
       setError('Erreur lors du traitement du paiement');
@@ -112,6 +112,7 @@ const Paiement = () => {
   };
 
   return (
+    // on a fait le rendu en utilisant bootstrap
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8}>

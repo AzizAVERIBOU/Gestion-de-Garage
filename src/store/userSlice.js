@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Vider le localStorage au chargement de la page
+// on vide le localStorage au chargement de la page pour reprendre des nouvelles donnees charger de l'api
 window.addEventListener('load', () => {
   localStorage.clear();
 });
@@ -15,22 +15,22 @@ const userSlice = createSlice({
   name: 'utilisateur',
   initialState,
   reducers: {
-    // Définir l'utilisateur courant
+    // on definit l'utilisateur courant
     definirUtilisateur: (state, action) => {
       state.utilisateurCourant = action.payload;
-      state.estAuthentifie = !!action.payload;
+      state.estAuthentifie = !!action.payload; 
       state.typeUtilisateur = action.payload?.type || null;
       
-      // Sauvegarder dans le localStorage
+      // on sauvegarde dans le localStorage
       if (action.payload) {
         const utilisateursStockes = JSON.parse(localStorage.getItem('utilisateursStockes') || '[]');
         const indexUtilisateur = utilisateursStockes.findIndex(u => u.username === action.payload.username);
         
         if (indexUtilisateur === -1) {
-          // Ajouter le nouvel utilisateur
+          // on ajoute le nouvel utilisateur
           utilisateursStockes.push(action.payload);
         } else {
-          // Mettre à jour l'utilisateur existant
+          // on met a jour l'utilisateur existant
           utilisateursStockes[indexUtilisateur] = action.payload;
         }
         
@@ -38,11 +38,11 @@ const userSlice = createSlice({
       }
     },
 
-    // Mettre à jour l'utilisateur
+    // on met a jour l'utilisateur
     mettreAJourUtilisateur: (state, action) => {
       state.utilisateurCourant = { ...state.utilisateurCourant, ...action.payload };
       
-      // Mettre à jour dans le localStorage
+      // on met a jour dans le localStorage
       const utilisateursStockes = JSON.parse(localStorage.getItem('utilisateursStockes') || '[]');
       const indexUtilisateur = utilisateursStockes.findIndex(u => u.username === state.utilisateurCourant.username);
       
@@ -56,7 +56,7 @@ const userSlice = createSlice({
 
 export const { definirUtilisateur, mettreAJourUtilisateur } = userSlice.actions;
 
-// Action de déconnexion simplifiée
+// action de deconnexion simplifiee
 export const deconnexion = () => (dispatch) => {
   dispatch(definirUtilisateur(null));
 };

@@ -3,70 +3,56 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Card, Button, Modal, Form, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faCalendarAlt, 
-  faCar, 
-  faSignOutAlt,
-  faUser,
-  faEdit,
-  faCreditCard,
-  faFileInvoice,
-  faTrash,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons';
-import { definirUtilisateur, mettreAJourUtilisateur, deconnexion } from '../store/userSlice';
+import { faCalendarAlt, faCar, faSignOutAlt, faUser, faEdit, faCreditCard, faFileInvoice, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { mettreAJourUtilisateur, deconnexion } from '../store/userSlice';
 import { supprimerVehicule } from '../store/vehiculeSlice';
-import { 
-  selectionnerRendezVousParUtilisateur, 
-  annulerRendezVous 
-} from '../store/rendezVousSlice';
+import { selectionnerRendezVousParUtilisateur, annulerRendezVous } from '../store/rendezVousSlice';
 import { selectionnerFacturesParUtilisateur } from '../store/factureSlice';
 import '../styles/TableauBordClient.css';
 import '../styles/Dashboard.css';
 
 const TableauBordClient = () => {
-  const navigate = useNavigate();
+  const naviguer = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.utilisateur.utilisateurCourant);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editedUser, setEditedUser] = useState(null);
+  const utilisateur = useSelector(state => state.utilisateur.utilisateurCourant);
+  const [afficherModalEdition, setAfficherModalEdition] = useState(false);
+  const [utilisateurModifie, setUtilisateurModifie] = useState(null);
   
-  // Filtrer les véhicules pour n'afficher que ceux de l'utilisateur connecté
   const vehicules = useSelector(state => 
-    state.vehicule.vehicules.filter(v => v.userId === user?.id)
+    state.vehicule.vehicules.filter(v => v.userId === utilisateur?.id)
   );
   
-  const rendezVous = useSelector(state => selectionnerRendezVousParUtilisateur(state, user?.id));
-  const factures = useSelector(state => selectionnerFacturesParUtilisateur(state, user?.id));
+  const rendezVous = useSelector(state => selectionnerRendezVousParUtilisateur(state, utilisateur?.id));
+  const factures = useSelector(state => selectionnerFacturesParUtilisateur(state, utilisateur?.id));
 
   useEffect(() => {
-    if (!user) {
-      navigate('/connexion');
+    if (!utilisateur) {
+      naviguer('/connexion');
     }
-  }, [user, navigate]);
+  }, [utilisateur, naviguer]);
 
-  const handleEdit = () => {
-    setEditedUser({ ...user });
-    setShowEditModal(true);
+  const gererEdition = () => {
+    setUtilisateurModifie({ ...utilisateur });
+    setAfficherModalEdition(true);
   };
 
-  const handleSave = () => {
-    dispatch(mettreAJourUtilisateur(editedUser));
-    setShowEditModal(false);
+  const gererSauvegarde = () => {
+    dispatch(mettreAJourUtilisateur(utilisateurModifie));
+    setAfficherModalEdition(false);
   };
 
-  const handleLogout = () => {
+  const gererDeconnexion = () => {
     dispatch(deconnexion());
-    navigate('/');
+    naviguer('/');
   };
 
-  const handleDeleteVehicule = (id) => {
+  const gererSuppressionVehicule = (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
       dispatch(supprimerVehicule(id));
     }
   };
 
-  const handleCancelRendezVous = (id) => {
+  const gererAnnulationRendezVous = (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
       dispatch(annulerRendezVous(id));
     }
@@ -77,7 +63,7 @@ const TableauBordClient = () => {
     rdv.status === 'accepté' && rdv.details?.coutEstime && !rdv.facture
   );
 
-  if (!user) {
+  if (!utilisateur) {
     return (
       <Container className="py-5">
         <Row className="justify-content-center">
@@ -89,7 +75,7 @@ const TableauBordClient = () => {
     );
   }
 
-  return (
+  return ( // le tableau de bord du client en utilisant react-bootstrap 
     <Container fluid className="dashboard-container">
       <Row className="dashboard-header align-items-center justify-content-center mb-5">
         <Col className="text-center">
@@ -105,7 +91,7 @@ const TableauBordClient = () => {
         <Col xs="auto">
           <Button 
             variant="outline-danger" 
-            onClick={handleLogout}
+            onClick={gererDeconnexion}
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
             Déconnexion
@@ -124,15 +110,15 @@ const TableauBordClient = () => {
             </Card.Header>
             <Card.Body>
               <div className="info-details">
-                <p><strong>Nom:</strong> {user.lastName || user.name}</p>
-                <p><strong>Prénom:</strong> {user.firstName}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Nom d'utilisateur:</strong> {user.username}</p>
+                <p><strong>Nom:</strong> {utilisateur.lastName || utilisateur.name}</p>
+                <p><strong>Prénom:</strong> {utilisateur.firstName}</p>
+                <p><strong>Email:</strong> {utilisateur.email}</p>
+                <p><strong>Nom d'utilisateur:</strong> {utilisateur.username}</p>
               </div>
               <div className="action-buttons">
                 <Button 
                   variant="outline-secondary"
-                  onClick={handleEdit}
+                  onClick={gererEdition}
                   className="w-100"
                 >
                   <FontAwesomeIcon icon={faEdit} className="me-2" />
@@ -193,7 +179,7 @@ const TableauBordClient = () => {
                               <Button 
                                 variant="success" 
                                 size="sm"
-                                onClick={() => navigate('/client/paiement', { 
+                                onClick={() => naviguer('/client/paiement', { 
                                   state: { 
                                     montant: rdv.details.coutEstime,
                                     rdvId: rdv.id
@@ -219,7 +205,7 @@ const TableauBordClient = () => {
                           <Button
                             variant="outline-danger"
                             size="sm"
-                            onClick={() => handleCancelRendezVous(rdv.id)}
+                            onClick={() => gererAnnulationRendezVous(rdv.id)}
                             title="Annuler le rendez-vous"
                           >
                             <FontAwesomeIcon icon={faTimes} />
@@ -259,7 +245,7 @@ const TableauBordClient = () => {
                           <Button
                             variant="outline-primary"
                             size="sm"
-                            onClick={() => navigate(`/client/modifier-vehicule/${vehicule.id}`)}
+                            onClick={() => naviguer(`/client/modifier-vehicule/${vehicule.id}`)}
                             className="me-1"
                           >
                             <FontAwesomeIcon icon={faEdit} />
@@ -267,7 +253,7 @@ const TableauBordClient = () => {
                           <Button
                             variant="outline-danger"
                             size="sm"
-                            onClick={() => handleDeleteVehicule(vehicule.id)}
+                            onClick={() => gererSuppressionVehicule(vehicule.id)}
                           >
                             <FontAwesomeIcon icon={faTrash} />
                           </Button>
@@ -287,7 +273,7 @@ const TableauBordClient = () => {
           <Button 
             variant="outline-primary" 
             size="lg"
-            onClick={() => navigate('/client/ajout-vehicule')}
+            onClick={() => naviguer('/client/ajout-vehicule')}
           >
             <FontAwesomeIcon icon={faCar} className="me-2" />
             Enregistrer un véhicule
@@ -295,7 +281,7 @@ const TableauBordClient = () => {
           <Button 
             variant="outline-success" 
             size="lg"
-            onClick={() => navigate('/client/rendez-vous')}
+            onClick={() => naviguer('/client/rendez-vous')}
           >
             <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
             Planifier un rendez-vous
@@ -304,7 +290,7 @@ const TableauBordClient = () => {
             <Button 
               variant="outline-info" 
               size="lg"
-              onClick={() => navigate('/client/paiement', {
+              onClick={() => naviguer('/client/paiement', {
                 state: {
                   montant: rendezVousAPayer[0].details.coutEstime,
                   rdvId: rendezVousAPayer[0].id
@@ -330,7 +316,7 @@ const TableauBordClient = () => {
           <Button 
             variant="outline-secondary" 
             size="lg"
-            onClick={() => navigate('/client/factures')}
+            onClick={() => naviguer('/client/factures')}
           >
             <FontAwesomeIcon icon={faFileInvoice} className="me-2" />
             Vérifier mes factures
@@ -343,7 +329,7 @@ const TableauBordClient = () => {
         </Col>
       </Row>
 
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      <Modal show={afficherModalEdition} onHide={() => setAfficherModalEdition(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Modifier mes informations</Modal.Title>
         </Modal.Header>
@@ -353,9 +339,9 @@ const TableauBordClient = () => {
               <Form.Label>Nom</Form.Label>
               <Form.Control
                 type="text"
-                value={editedUser?.lastName || editedUser?.name || ''}
-                onChange={(e) => setEditedUser({
-                  ...editedUser,
+                value={utilisateurModifie?.lastName || utilisateurModifie?.name || ''}
+                onChange={(e) => setUtilisateurModifie({
+                  ...utilisateurModifie,
                   lastName: e.target.value,
                   name: e.target.value
                 })}
@@ -365,9 +351,9 @@ const TableauBordClient = () => {
               <Form.Label>Prénom</Form.Label>
               <Form.Control
                 type="text"
-                value={editedUser?.firstName || ''}
-                onChange={(e) => setEditedUser({
-                  ...editedUser,
+                value={utilisateurModifie?.firstName || ''}
+                onChange={(e) => setUtilisateurModifie({
+                  ...utilisateurModifie,
                   firstName: e.target.value
                 })}
               />
@@ -376,9 +362,9 @@ const TableauBordClient = () => {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
-                value={editedUser?.email || ''}
-                onChange={(e) => setEditedUser({
-                  ...editedUser,
+                value={utilisateurModifie?.email || ''}
+                onChange={(e) => setUtilisateurModifie({
+                  ...utilisateurModifie,
                   email: e.target.value
                 })}
               />
@@ -386,10 +372,10 @@ const TableauBordClient = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          <Button variant="secondary" onClick={() => setAfficherModalEdition(false)}>
             Annuler
           </Button>
-          <Button variant="primary" onClick={handleSave}>
+          <Button variant="primary" onClick={gererSauvegarde}>
             Enregistrer
           </Button>
         </Modal.Footer>

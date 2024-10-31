@@ -11,9 +11,9 @@ const ModifierVehicule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const user = useSelector(state => state.user.currentUser);
+  const utilisateur = useSelector(state => state.utilisateur.utilisateurCourant);
   const vehicules = useSelector(state => state.vehicule.vehicules);
-  const vehiculeToEdit = vehicules.find(v => v.id === parseInt(id));
+  const vehiculeAModifier = vehicules.find(v => v.id === parseInt(id));
 
   const [vehicule, setVehicule] = useState({
     marque: '',
@@ -22,19 +22,19 @@ const ModifierVehicule = () => {
   });
 
   useEffect(() => {
-    if (!user) {
+    if (!utilisateur) {
       navigate('/connexion');
       return;
     }
 
-    if (vehiculeToEdit) {
-      setVehicule(vehiculeToEdit);
+    if (vehiculeAModifier) {
+      setVehicule(vehiculeAModifier);
     } else {
       navigate('/client/tableau-de-bord');
     }
-  }, [user, vehiculeToEdit, navigate]);
+  }, [utilisateur, vehiculeAModifier, navigate]);
 
-  // Générer la liste des années
+  // on va gerer les années des vehicules avec la date actuelle en utilisant une boucle
   const anneeActuelle = new Date().getFullYear();
   const annees = Array.from(
     { length: anneeActuelle - 1949 },
@@ -47,7 +47,7 @@ const ModifierVehicule = () => {
     navigate('/client/tableau-de-bord');
   };
 
-  if (!vehiculeToEdit) {
+  if (!vehiculeAModifier) {
     return null;
   }
 

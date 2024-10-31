@@ -4,22 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCar, faArrowLeft, faBarcode, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ajouterVehicule } from '../store/vehiculeSlice';
+import { ajouterVehicule, fetchMarques, fetchModeles } from '../store/vehiculeSlice';
 import '../styles/AjoutVehicule.css';
-
-// Le système de cache est utilisé pour optimiser les performances lors des recherches de véhicules
-// Quand un utilisateur recherche une marque ou un modèle :
-// 1. On vérifie d'abord si cette recherche existe déjà dans le cache
-// 2. Si oui, on retourne directement les résultats stockés, évitant ainsi un appel API
-// 3. Si non, on fait l'appel API et on stocke les résultats dans le cache pour les futures recherches
-// Avantages :
-// - Réduction du nombre d'appels API
-// - Réponses plus rapides pour les recherches répétées
-// - Meilleure expérience utilisateur
-// - Économie de bande passante
-// Le cache est temporaire et existe uniquement pendant la session de l'utilisateur
-const marqueCache = new Map();  // Cache pour stocker les résultats de recherche des marques
-const modeleCache = new Map();  // Cache pour stocker les résultats de recherche des modèles
 
 const AjoutVehicule = () => {
   const navigate = useNavigate();
@@ -52,7 +38,7 @@ const AjoutVehicule = () => {
   const anneeActuelle = new Date().getFullYear();
   const annees = Array.from(
     { length: anneeActuelle - 1949 },
-    (_, i) => anneeActuelle - i
+    (_, i) => anneeActuelle - i // ici on creer la liste des annees en utilisant une boucle 
   );
 
   const handleVinSearch = async () => {
@@ -63,7 +49,7 @@ const AjoutVehicule = () => {
       const data = await response.json();
       
       if (data.Results) {
-        // Extraire les informations pertinentes
+        // on va chercher les modeles sur le vin rechercher sur l'api de nhtsa
         const make = data.Results.find(item => item.Variable === "Make")?.Value;
         const model = data.Results.find(item => item.Variable === "Model")?.Value;
         const year = data.Results.find(item => item.Variable === "Model Year")?.Value;
@@ -76,10 +62,10 @@ const AjoutVehicule = () => {
             annee: year
           });
         } else {
-          setError("Impossible de récupérer toutes les informations du véhicule");
+          setError("Impossible de récupérer toutes les informations du véhicule"); // si on ne trouve pas les informations du vin pour savoir quelle partie du code on est 
         }
       } else {
-        setError("VIN invalide ou non reconnu");
+        setError("VIN invalide ou non reconnu"); // si on ne trouve pas les informations du vin 
       }
     } catch (err) {
       setError("Erreur lors de la récupération des informations");
@@ -105,85 +91,10 @@ const AjoutVehicule = () => {
     navigate('/client/tableau-de-bord');
   };
 
-  // Fonction optimisée pour récupérer les marques avec système de cache
-  const fetchMarques = async (searchTerm) => {
-    if (searchTerm.length < 2) {
-      setSuggestions({ ...suggestions, marques: [] });
-      return;
-    }
+  // on recupere les marques et les modeles du state
+  const { marques, modeles, loading: stateLoading } = useSelector(state => state.vehicule);
 
-    // Vérifier si la recherche existe déjà dans le cache
-    const cacheKey = searchTerm.toLowerCase();
-    if (marqueCache.has(cacheKey)) {
-      // Si oui, utiliser les données du cache au lieu de faire un appel API
-      setSuggestions({
-        ...suggestions,
-        marques: marqueCache.get(cacheKey)
-      });
-      return;
-    }
-
-    // Si non, faire l'appel API et stocker le résultat dans le cache
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes?format=json`);
-      const data = await response.json();
-      if (data.Results) {
-        const filteredMakes = data.Results
-          .filter(make => 
-            make.Make_Name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .slice(0, 8) // Limiter à 8 suggestions pour plus de rapidité
-          .map(item => item.Make_Name);
-
-        // Stocker les résultats dans le cache pour les futures recherches
-        marqueCache.set(cacheKey, filteredMakes);
-        setSuggestions({
-          ...suggestions,
-          marques: filteredMakes
-        });
-      }
-    } catch (err) {
-      console.error('Erreur lors de la récupération des marques:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Fonction optimisée pour récupérer les modèles
-  const fetchModeles = async (marque) => {
-    if (!marque) return;
-
-    // Vérifier le cache
-    if (modeleCache.has(marque)) {
-      setSuggestions({
-        ...suggestions,
-        modeles: modeleCache.get(marque)
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${encodeURIComponent(marque)}?format=json`);
-      const data = await response.json();
-      if (data.Results) {
-        const modeles = data.Results.map(item => item.Model_Name);
-        // Mettre en cache les résultats
-        modeleCache.set(marque, modeles);
-        setSuggestions({
-          ...suggestions,
-          modeles: modeles
-        });
-      }
-    } catch (err) {
-      console.error('Erreur lors de la récupération des modèles:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Gestionnaire de changement optimisé pour la marque
+  // on recupere la valeur de la marque et on la met dans le state
   const handleMarqueChange = (e) => {
     const value = e.target.value;
     setVehicule(prev => ({
@@ -192,61 +103,31 @@ const AjoutVehicule = () => {
       modele: ''
     }));
 
-    // Réinitialiser les suggestions de modèles
-    setSuggestions(prev => ({
-      ...prev,
-      modeles: []
-    }));
-
     if (window.searchTimeout) {
       clearTimeout(window.searchTimeout);
     }
 
     window.searchTimeout = setTimeout(() => {
       if (value.length >= 2) {
-        fetchMarques(value);
-      } else {
-        setSuggestions(prev => ({
-          ...prev,
-          marques: []
-        }));
+        dispatch(fetchMarques(value));
       }
     }, 200);
   };
 
-  // Gestionnaire de sélection de marque modifié
+  // on recupere la valeur de la marque et on la met dans le state
   const handleMarqueSelect = async (marque) => {
-    // Mettre à jour le véhicule avec la marque sélectionnée
     setVehicule(prev => ({
       ...prev,
       marque: marque,
-      modele: '' // Réinitialiser le modèle
+      modele: ''
     }));
 
-    // Fermer la liste des suggestions de marques
     setSuggestions(prev => ({
       ...prev,
       marques: []
     }));
 
-    // Charger les modèles pour cette marque
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${encodeURIComponent(marque)}?format=json`);
-      const data = await response.json();
-      
-      if (data.Results) {
-        const modeles = data.Results.map(item => item.Model_Name);
-        setSuggestions(prev => ({
-          ...prev,
-          modeles: modeles
-        }));
-      }
-    } catch (err) {
-      console.error('Erreur lors de la récupération des modèles:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    dispatch(fetchModeles(marque));
   };
 
   // Si l'utilisateur n'est pas connecté, on peut retourner null ou un loader
@@ -255,6 +136,7 @@ const AjoutVehicule = () => {
   }
 
   return (
+    // on affiche la page d'ajout de vehicule en utilisant bootstrap
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8}>
@@ -330,7 +212,7 @@ const AjoutVehicule = () => {
                         </Button>
                       </div>
                       <Form.Text className="text-muted">
-                        Le numéro VIN se trouve sur la carte grise du véhicule
+                        Entrer le numéro VIN du véhicule , il se trouve sur la carte grise du véhicule
                       </Form.Text>
                     </Form.Group>
 
@@ -342,7 +224,7 @@ const AjoutVehicule = () => {
 
                     {(vehicule.marque || vehicule.modele || vehicule.annee) && (
                       <Alert variant="info">
-                        <p className="mb-1"><strong>Informations détectées :</strong></p>
+                        <p className="mb-1"><strong>Informations du véhicule :</strong></p>
                         <p className="mb-1">Marque : {vehicule.marque}</p>
                         <p className="mb-1">Modèle : {vehicule.modele}</p>
                         <p className="mb-0">Année : {vehicule.annee}</p>
@@ -364,7 +246,7 @@ const AjoutVehicule = () => {
                                   onChange={handleMarqueChange}
                                   onFocus={() => {
                                     if (vehicule.marque.length >= 2) {
-                                      fetchMarques(vehicule.marque);
+                                      dispatch(fetchMarques(vehicule.marque));
                                     }
                                   }}
                                   placeholder="Commencez à taper pour voir les suggestions..."
@@ -378,7 +260,7 @@ const AjoutVehicule = () => {
                                 )}
                                 {suggestions.marques.length > 0 && (
                                   <div className="suggestions-container position-absolute w-100 mt-1 bg-white border rounded shadow-sm">
-                                    {suggestions.marques.map((marque, index) => (
+                                    {marques.map((marque, index) => (
                                       <div
                                         key={index}
                                         className="p-2 hover-bg-light"
@@ -400,10 +282,10 @@ const AjoutVehicule = () => {
                                 value={vehicule.modele}
                                 onChange={(e) => setVehicule({...vehicule, modele: e.target.value})}
                                 required
-                                disabled={!vehicule.marque || suggestions.modeles.length === 0}
+                                disabled={!vehicule.marque || modeles.length === 0}
                               >
-                                <option value="">Sélectionnez un modèle</option>
-                                {suggestions.modeles.map((modele, index) => (
+                                <option value="">Sélectionnez le modèle de votre véhicule</option>
+                                {modeles.map((modele, index) => (
                                   <option key={index} value={modele}>
                                     {modele}
                                   </option>
@@ -420,7 +302,7 @@ const AjoutVehicule = () => {
                             onChange={(e) => setVehicule({...vehicule, annee: e.target.value})}
                             required
                           >
-                            <option value="">Sélectionnez une année</option>
+                            <option value="">Sélectionnez l'année de votre véhicule</option>
                             {annees.map(annee => (
                               <option key={annee} value={annee}>
                                 {annee}
