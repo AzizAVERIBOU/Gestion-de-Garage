@@ -28,12 +28,15 @@ const Paiement = () => {
     cvv: '',
     nomCarte: ''
   });
-
+  // ce constante va nous permettre de gerer les erreurs
   const [error, setError] = useState('');
-
+  // ce constante va nous permettre de savoir si l'utilisateur veut sauvegarder la carte  
   const [sauvegarderCarte, setSauvegarderCarte] = useState(false);
+  // on va selectionner les methodes de paiement enregistrées pour l'utilisateur
   const methodesEnregistrees = useSelector(state => selectionnerMethodesPaiementParUtilisateur(state, user?.id));
+  // ce constante va nous permettre de savoir si l'utilisateur veut utiliser une methode de paiement enregistrée
   const [useMethodeEnregistree, setUseMethodeEnregistree] = useState(false);
+  // ce constante va nous permettre de selectionner la methode de paiement enregistrée
   const [selectedMethode, setSelectedMethode] = useState(null);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const Paiement = () => {
           marque: rdvConcerne.vehiculeInfo.marque,
           modele: rdvConcerne.vehiculeInfo.modele,
           annee: rdvConcerne.vehiculeInfo.annee
-        },
+        }, // on ajoute les details du vehicule 
         service: rdvConcerne.motif,
         description: rdvConcerne.description,
         status: 'payée',

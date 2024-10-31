@@ -32,6 +32,8 @@ export const fetchModeles = createAsyncThunk(
   'vehicule/fetchModeles',
   async (marque) => {
     // Vérifier si on a déjà ces résultats en cache
+    // on va verifier si on a deja des resultats en cache pour la marque selectionnée
+    //pour ne pas faire des requetes inutiles a l'api et aumenter la rapidite de l'autocompletion
     const cachedResults = localStorage.getItem(`modeles_${marque}`);
     if (cachedResults) {
       return JSON.parse(cachedResults);
@@ -166,9 +168,11 @@ export const selectionnerTousLesVehicules = (state) => {
   const userId = state.utilisateur.utilisateurCourant?.id;
   return state.vehicule.vehicules.filter(v => v.userId === userId);
 };
-
+// pour selectionner le vehicule selectionne  
 export const selectionnerVehiculeSelectionne = (state) => state.vehicule.vehiculeSelectionne;
+// pour selectionner le chargement
 export const selectionnerChargementVehicule = (state) => state.vehicule.chargement;
+// pour selectionner l'erreur
 export const selectionnerErreurVehicule = (state) => state.vehicule.erreur;
 
 export default vehiculeSlice.reducer; 

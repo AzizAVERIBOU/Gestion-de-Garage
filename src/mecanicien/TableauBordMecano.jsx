@@ -3,19 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Table, Modal, Form, Badge, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faCalendarDay, 
-  faTasks, 
   faCalendarWeek, 
   faSignOutAlt, 
   faCalendar, 
-  faPlus, 
-  faTrash, 
   faUser, 
-  faCalendarAlt, 
-  faEdit, 
   faFileInvoice, 
   faCheck, 
-  faTimes 
+  faTimes,
+  faTasks 
 } from '@fortawesome/free-solid-svg-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
@@ -24,10 +19,8 @@ import {
 } from '../store/disponibiliteSlice';
 import { 
   selectionnerTousLesRendezVous, 
-  mettreAJourStatutRendezVous, 
-  demanderModificationRendezVous, 
-  approuverModificationRendezVous, 
-  refuserModificationRendezVous 
+  mettreAJourStatutRendezVous,
+  approuverModificationRendezVous 
 } from '../store/rendezVousSlice';
 import '../styles/TableauBordMecano.css';
 import '../styles/Dashboard.css';

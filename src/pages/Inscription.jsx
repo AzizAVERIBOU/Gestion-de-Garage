@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faArrowLeft, 
-  faUser, 
-  faEnvelope, 
-  faCalendar, 
-  faLock 
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faUser, faEnvelope, faCalendar, faLock } from '@fortawesome/free-solid-svg-icons';
 import '../styles/Inscription.css';
 
 const Inscription = () => {

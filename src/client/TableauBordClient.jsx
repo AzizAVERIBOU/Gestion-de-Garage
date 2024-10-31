@@ -13,6 +13,7 @@ import '../styles/TableauBordClient.css';
 import '../styles/Dashboard.css';
 
 const TableauBordClient = () => {
+  
   const naviguer = useNavigate();
   const dispatch = useDispatch();
   const utilisateur = useSelector(state => state.utilisateur.utilisateurCourant);
@@ -42,38 +43,44 @@ const TableauBordClient = () => {
     }
   }, [utilisateur, naviguer]);
 
+  // on gere l'edition des informations de l'utilisateur ici
   const gererEdition = () => {
     setUtilisateurModifie({ ...utilisateur });
     setAfficherModalEdition(true);
   };
 
+  // on gere la sauvegarde des informations de l'utilisateur ici
   const gererSauvegarde = () => {
     dispatch(mettreAJourUtilisateur(utilisateurModifie));
     setAfficherModalEdition(false);
   };
 
+  // on gere la deconnexion de l'utilisateur ici
   const gererDeconnexion = () => {
     dispatch(deconnexion());
     naviguer('/');
   };
 
+  // on gere la suppression d'un vehicule ici
   const gererSuppressionVehicule = (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
       dispatch(supprimerVehicule(id));
     }
   };
 
+  // on gere l'annulation d'un rendez vous ici
   const gererAnnulationRendezVous = (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
       dispatch(annulerRendezVous(id));
     }
   };
 
-  // Filtrer les rendez-vous acceptés qui nécessitent un paiement
+  // on filtre les rendez vous acceptés qui nécessitent un paiement ici
   const rendezVousAPayer = rendezVous.filter(rdv => 
     rdv.status === 'accepté' && rdv.details?.coutEstime && !rdv.facture
   );
 
+  // on gere le click sur le bouton d'edition d'un rendez vous ici
   const handleEditClick = (rdv) => {
     console.log('1. Début handleEditClick - RDV reçu:', rdv);
     setRdvToEdit(rdv);
@@ -107,6 +114,7 @@ const TableauBordClient = () => {
     setShowEditModal(true);
   };
 
+  // on gere la soumission de l'edition d'un rendez vous ici
   const handleEditSubmit = () => {
     if (!editForm.date || !editForm.heure || !editForm.motif) {
       alert('Veuillez remplir tous les champs obligatoires');
@@ -133,6 +141,7 @@ const TableauBordClient = () => {
     });
   };
 
+  // on gere le chargement du tableau de bord du client ici
   if (!utilisateur) {
     return (
       <Container className="py-5">

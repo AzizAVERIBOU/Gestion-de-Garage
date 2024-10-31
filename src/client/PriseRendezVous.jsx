@@ -22,7 +22,9 @@ const PriseRendezVous = () => {
     }
   }, [user, navigate]);
 
+  // on va gerer les etapes du rendez vous cette constante va nous permettre de savoir ou on en est dans le processus
   const [etape, setEtape] = useState(1);
+  // on va gerer les informations du rendez vous ici
   const [rendezVous, setRendezVous] = useState({
     vehiculeId: '',
     mecanicienId: '',
@@ -33,9 +35,9 @@ const PriseRendezVous = () => {
   });
   const [error, setError] = useState('');
 
-  // Filtrer les mécaniciens disponibles
+  // on va filtrer les mécaniciens seulement qui sont disponibles
   const mecaniciensDisponibles = mecanos.filter(mecanicien => {
-    // Vérifier si le mécanicien a des horaires configurés
+    // on verifie si le mécanicien a des horaires configurés
     return disponibilites[mecanicien.id] && Object.keys(disponibilites[mecanicien.id]).length > 0;
   });
 
@@ -55,7 +57,7 @@ const PriseRendezVous = () => {
     setError('');
     setEtape(etape + 1);
   };
-
+  // on va gerer le retour a l'etape precedente
   const handleBack = () => {
     if (etape > 1) {
       setEtape(etape - 1);
@@ -64,6 +66,7 @@ const PriseRendezVous = () => {
     }
   };
 
+  //etape numero 1
   const renderEtape1 = () => (
     <>
       <h5 className="mb-4">Étape 1: Sélection du véhicule</h5>
@@ -125,6 +128,7 @@ const PriseRendezVous = () => {
     </>
   );
 
+  //etape numero 2
   const renderEtape2 = () => (
     <>
       <h5 className="mb-4">Étape 2: Choix du mécanicien</h5>
@@ -192,6 +196,7 @@ const PriseRendezVous = () => {
     </>
   );
 
+  //etape numero 3
   const renderEtape3 = () => {
     const mecanicienSelectionne = mecaniciensDisponibles.find(m => m.id === rendezVous.mecanicienId);
     const disponibilitesMecanicien = disponibilites[rendezVous.mecanicienId] || {};
@@ -268,6 +273,7 @@ const PriseRendezVous = () => {
     );
   };
 
+  //etape numero 4
   const renderEtape4 = () => (
     <>
       <h5 className="mb-4">Étape 4: Détails du service</h5>

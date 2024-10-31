@@ -21,7 +21,7 @@ const Factures = () => {
   };
 
   return (
-    // on affiche la page des factures en utilisant bootstrap 
+    // on affiche la page des factures en utilisant le rendu de bootstrap 
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={10}>
@@ -52,14 +52,14 @@ const Factures = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {factures.length === 0 ? (
+                  {factures.length === 0 ? ( // si il n'y a pas de facture on affiche un message
                     <tr>
                       <td colSpan="6" className="text-center">
                         Aucune facture disponible
                       </td>
                     </tr>
                   ) : (
-                    factures.map(facture => (
+                    factures.map(facture => ( // on map les factures pour les afficher
                       <tr key={facture.id}>
                         <td>{facture.id}</td>
                         <td>{formatDate(facture.date)}</td>

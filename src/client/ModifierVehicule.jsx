@@ -40,7 +40,7 @@ const ModifierVehicule = () => {
     { length: anneeActuelle - 1949 },
     (_, i) => anneeActuelle - i
   );
-
+  // on va mettre a jour le vehicule avec les nouvelles informations
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(mettreAJourVehicule({ ...vehicule, id: parseInt(id) }));
@@ -52,6 +52,7 @@ const ModifierVehicule = () => {
   }
 
   return (
+    // on va mettre a jour le vehicule avec les nouvelles informations
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8}>

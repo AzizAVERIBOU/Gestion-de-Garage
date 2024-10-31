@@ -28,11 +28,6 @@ const AjoutVehicule = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [suggestions, setSuggestions] = useState({
-    marques: [],
-    modeles: []
-  });
-  const [isLoading, setIsLoading] = useState(false);
 
   // Générer la liste des années
   const anneeActuelle = new Date().getFullYear();
@@ -74,7 +69,7 @@ const AjoutVehicule = () => {
       setLoading(false);
     }
   };
-
+  // action pour enregistrer le vehicule
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!user) {
@@ -94,7 +89,7 @@ const AjoutVehicule = () => {
   // on recupere les marques et les modeles du state
   const { marques, modeles, loading: stateLoading } = useSelector(state => state.vehicule);
 
-  // on recupere la valeur de la marque et on la met dans le state
+  // on recupere la valeur de la marque et on la met dans le state avec un debounce
   const handleMarqueChange = (e) => {
     const value = e.target.value;
     setVehicule(prev => ({
@@ -103,7 +98,8 @@ const AjoutVehicule = () => {
       modele: ''
     }));
 
-    // Debounce la recherche
+    // on utilise la notion de debounce pour limiter le nombre de requete a l'api
+    //sa nous permet de ne pas faire des requetes a l'api a chaque fois que l'utilisateur tape une lettre
     if (window.searchTimeout) {
       clearTimeout(window.searchTimeout);
     }
@@ -253,11 +249,6 @@ const AjoutVehicule = () => {
                                   autoComplete="off"
                                   required
                                 />
-                                {isLoading && (
-                                  <div className="position-absolute top-50 end-0 translate-middle-y pe-3">
-                                    <FontAwesomeIcon icon={faSpinner} spin />
-                                  </div>
-                                )}
                                 {marques?.length > 0 && vehicule.marque && (
                                   <div className="suggestions-container position-absolute w-100 mt-1 bg-white border rounded shadow-sm">
                                     {marques.map((marque, index) => (

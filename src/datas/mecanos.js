@@ -1,4 +1,5 @@
 const mecanos = [
+  // dans ce on a creer des mécaniciens fictifs pour les tests pour differencier les mécaniciens des clients de dummyjson
   {
     id: 1,
     username: "mecano1",

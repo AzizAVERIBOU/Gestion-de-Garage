@@ -6,7 +6,7 @@ const initialState = {
   erreur: null
 };
 
-// Fonction pour générer un numéro de facture unique on chercher comment generer un numero de facture unique
+// on utilise cette fonction pour générer un numéro de facture unique qu'on a trouver sur internet
 // on genere un numero de facture unique avec l'annee, le mois et un numero sequentiel
 // par exemple FAC-2403-0001 correspond a la facture numero 1 generée en 2024 au mois de mars
 const genererNumeroFacture = () => {
@@ -33,7 +33,7 @@ const factureSlice = createSlice({ // on cree un slice pour les factures
     definirFactures: (state, action) => { // on definit les factures
       state.factures = action.payload;
     },
-    definirChargement: (state, action) => {
+    definirChargement: (state, action) => { // on definit le chargement
       state.chargement = action.payload;
     },
     definirErreur: (state, action) => { // on definit les erreurs

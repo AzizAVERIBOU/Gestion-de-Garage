@@ -35,6 +35,7 @@ const AjoutDisponibilite = () => {
 
     // nous avons definis ces plages horaires pour faciliter la gestion des disponibilites au niveau des horaires
     // comme ca on peut utiliser les fonctionnalite de cliquer sur une plage horaire pour ajouter une disponibilite
+    // au lieu de devoir entrer les horaires manuellement avec le calendrier propre a react bootstrap
     let creneaux = [];
     if (plageHoraire.plage === 'matin') {
       creneaux = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];

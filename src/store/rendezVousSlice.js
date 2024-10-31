@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = { // on definit l'etat initial pour les rendez-vous
   rendezVous: [],
   loading: false, // pour gerer le chargement
-  error: null // pour gerer les erreurs
+  error: null 
 };
 
 const rendezVousSlice = createSlice({
@@ -59,7 +59,8 @@ const rendezVousSlice = createSlice({
     definirErreur: (state, action) => {
       state.error = action.payload;
     },
-
+    
+    // pour mettre a jour les informations d'un rendez vous
     mettreAJourRendezVous: (state, action) => {
       console.log('15. Reducer mettreAJourRendezVous - Payload reçu:', action.payload);
       const index = state.rendezVous.findIndex(rdv => rdv.id === action.payload.id);
@@ -75,6 +76,7 @@ const rendezVousSlice = createSlice({
       console.log('19. État final des rendez-vous:', state.rendezVous);
     },
 
+    // pour demander une modification d'un rendez vous
     demanderModificationRendezVous: (state, action) => {
       const { id, modifications } = action.payload;
       const rdv = state.rendezVous.find(r => r.id === id);
@@ -86,6 +88,7 @@ const rendezVousSlice = createSlice({
       }
     },
 
+    // pour approuver une modification d'un rendez vous
     approuverModificationRendezVous: (state, action) => {
       const { id } = action.payload;
       const rdv = state.rendezVous.find(r => r.id === id);
@@ -98,6 +101,7 @@ const rendezVousSlice = createSlice({
       }
     },
 
+    // pour refuser une modification d'un rendez vous
     refuserModificationRendezVous: (state, action) => {
       const { id, raisonRefus } = action.payload;
       const rdv = state.rendezVous.find(r => r.id === id);

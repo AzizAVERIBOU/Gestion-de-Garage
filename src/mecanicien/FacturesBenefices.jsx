@@ -22,6 +22,7 @@ const FacturesBenefices = () => {
   }), { montantTotal: 0, montantMecanicien: 0 });
 
   return (
+    // on a utiliser le container de bootstrap pour faire de la mise en page
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={10}>

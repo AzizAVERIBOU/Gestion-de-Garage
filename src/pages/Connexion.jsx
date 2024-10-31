@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import mecanos from '../datas/mecanos';
 import { definirUtilisateur } from '../store/userSlice';
 import '../styles/Connexion.css';
