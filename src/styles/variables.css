@@ -1,0 +1,32 @@
+:root {
+  /* Couleurs principales */
+  --primary: #2c3e50;      /* Bleu foncé professionnel */
+  --secondary: #34495e;    /* Bleu gris */
+  --success: #27ae60;      /* Vert professionnel */
+  --warning: #f39c12;      /* Orange doux */
+  --danger: #c0392b;       /* Rouge professionnel */
+  --info: #3498db;         /* Bleu clair */
+  
+  /* Nuances de gris */
+  --light: #ecf0f1;
+  --dark: #2c3e50;
+  --gray: #95a5a6;
+  
+  /* Couleurs de fond */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  
+  /* Couleurs de texte */
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --text-light: #ffffff;
+  
+  /* Couleurs des bordures */
+  --border-color: #dfe6e9;
+  
+  /* Couleurs des états */
+  --hover-primary: #243342;
+  --hover-success: #219a52;
+  --hover-warning: #d68910;
+  --hover-danger: #a93226;
+} 

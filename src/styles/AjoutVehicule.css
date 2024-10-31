@@ -1,0 +1,8 @@
+.hover-bg-light:hover {
+  background-color: #f8f9fa;
+}
+
+.suggestions-container {
+  max-height: 200px;
+  overflow-y: auto;
+} 

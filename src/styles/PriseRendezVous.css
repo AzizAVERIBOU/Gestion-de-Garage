@@ -1,0 +1,29 @@
+.rendez-vous-steps {
+  margin-bottom: 2rem;
+}
+
+.step-indicator {
+  height: 2px;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.vehicle-card, .mechanic-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vehicle-card:hover, .mechanic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.time-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.time-slot-button {
+  min-width: 80px;
+} 

@@ -1,0 +1,21 @@
+.facture-header {
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.facture-table {
+  margin-top: 1rem;
+}
+
+.facture-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.download-button {
+  transition: all 0.2s ease;
+}
+
+.download-button:hover {
+  transform: translateY(-1px);
+} 

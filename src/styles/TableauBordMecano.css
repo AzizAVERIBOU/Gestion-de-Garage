@@ -1,0 +1,14 @@
+.disponibilites-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.disponibilites-list .badge {
+  font-size: 0.9rem;
+  display: block;
+  text-align: center;
+}
+
+.disponibilites-list .card-header {
+  text-transform: capitalize;
+} 

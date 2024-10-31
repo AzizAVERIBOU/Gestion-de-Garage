@@ -1,0 +1,17 @@
+.inscription-container {
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.inscription-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-divider {
+  margin: 2rem 0;
+  border-top: 1px solid var(--border-color);
+} 

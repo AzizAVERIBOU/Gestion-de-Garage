@@ -1,0 +1,129 @@
+/* Styles de base */
+body {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* Variables de couleurs */
+:root {
+  /* Couleurs principales */
+  --primary: #1a237e;
+  --secondary: #455a64;
+  --success: #1b5e20;
+  --warning: #e65100;
+  --danger: #b71c1c;
+  --info: #01579b;
+  
+  /* Nuances de gris */
+  --light: #f5f5f5;
+  --dark: #263238;
+  --gray: #607d8b;
+  
+  /* Couleurs de fond */
+  --bg-primary: #ffffff;
+  --bg-secondary: #eceff1;
+  
+  /* Couleurs de texte */
+  --text-primary: #263238;
+  --text-secondary: #546e7a;
+  --text-light: #ffffff;
+  
+  /* Couleurs des bordures */
+  --border-color: #cfd8dc;
+  
+  /* Couleurs des états */
+  --hover-primary: #0d47a1;
+  --hover-success: #2e7d32;
+  --hover-warning: #f57c00;
+  --hover-danger: #c62828;
+}
+
+/* Override Bootstrap */
+:root {
+  --bs-primary: var(--primary);
+  --bs-secondary: var(--secondary);
+  --bs-success: var(--success);
+  --bs-warning: var(--warning);
+  --bs-danger: var(--danger);
+  --bs-info: var(--info);
+  
+  --bs-primary-rgb: 44, 62, 80;
+  --bs-secondary-rgb: 52, 73, 94;
+  --bs-success-rgb: 39, 174, 96;
+  --bs-warning-rgb: 243, 156, 18;
+  --bs-danger-rgb: 192, 57, 43;
+  --bs-info-rgb: 52, 152, 219;
+}
+
+/* Styles des composants */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-primary);
+  border-color: var(--hover-primary);
+}
+
+.btn-success {
+  background-color: var(--success);
+  border-color: var(--success);
+}
+
+.btn-success:hover {
+  background-color: var(--hover-success);
+  border-color: var(--hover-success);
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.card {
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: var(--bg-primary);
+}
+
+.card-header {
+  background-color: var(--primary);
+  color: var(--text-light);
+}
+
+.progress-bar {
+  background-color: var(--primary);
+}
+
+.badge.bg-success {
+  background-color: var(--success) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--warning) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--danger) !important;
+}
+
+.alert-info {
+  background-color: var(--info);
+  border-color: var(--info);
+  color: var(--text-light);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-light);
+}
