@@ -24,7 +24,10 @@ import {
 } from '../store/disponibiliteSlice';
 import { 
   selectionnerTousLesRendezVous, 
-  mettreAJourStatutRendezVous 
+  mettreAJourStatutRendezVous, 
+  demanderModificationRendezVous, 
+  approuverModificationRendezVous, 
+  refuserModificationRendezVous 
 } from '../store/rendezVousSlice';
 import '../styles/TableauBordMecano.css';
 import '../styles/Dashboard.css';
@@ -96,7 +99,8 @@ const TableauBordMecano = () => {
 
   // on filtre les rendez-vous du mecanicien connecte qui sont en attente
   const rendezVousEnAttente = rendezVous.filter(rdv => 
-    rdv.mecanicienId === user?.id && rdv.status === 'planifié'
+    rdv.mecanicienId === user?.id && 
+    (rdv.status === 'planifié' || rdv.status === 'modification_en_attente')
   );
 
   const handleAcceptRendezVous = (rdvId) => { // fonction pour accepter un rendez-vous avec l'id du rendez-vous
@@ -247,6 +251,18 @@ const TableauBordMecano = () => {
                   rendezVousEnAttente.map((rdv) => (
                     <Card key={rdv.id} className="mb-3 border-warning">
                       <Card.Body>
+                        {rdv.status === 'modification_en_attente' && (
+                          <Alert variant="info" className="mb-2">
+                            Demande de modification
+                            <hr/>
+                            <small>
+                              <strong>Changements demandés :</strong><br/>
+                              Date: {new Date(rdv.modifications.date).toLocaleDateString()}<br/>
+                              Heure: {rdv.modifications.heure}<br/>
+                              Motif: {rdv.modifications.motif}
+                            </small>
+                          </Alert>
+                        )}
                         <h6 className="mb-2">
                           {new Date(rdv.date).toLocaleDateString()} à {rdv.heure}
                         </h6>
@@ -265,22 +281,48 @@ const TableauBordMecano = () => {
                           </p>
                         )}
                         <div className="d-flex gap-2">
-                          <Button
-                            variant="success"
-                            size="sm"
-                            onClick={() => handleAcceptClick(rdv)}
-                          >
-                            <FontAwesomeIcon icon={faCheck} className="me-1" />
-                            Accepter
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleRefuseClick(rdv)}
-                          >
-                            <FontAwesomeIcon icon={faTimes} className="me-1" />
-                            Refuser
-                          </Button>
+                          {rdv.status === 'modification_en_attente' ? (
+                            <>
+                              <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => dispatch(approuverModificationRendezVous({ id: rdv.id }))}
+                              >
+                                <FontAwesomeIcon icon={faCheck} className="me-1" />
+                                Approuver les modifications
+                              </Button>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedRdv(rdv);
+                                  setShowRefusModal(true);
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faTimes} className="me-1" />
+                                Refuser les modifications
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleAcceptClick(rdv)}
+                              >
+                                <FontAwesomeIcon icon={faCheck} className="me-1" />
+                                Accepter
+                              </Button>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => handleRefuseClick(rdv)}
+                              >
+                                <FontAwesomeIcon icon={faTimes} className="me-1" />
+                                Refuser
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </Card.Body>
                     </Card>
@@ -334,6 +376,71 @@ const TableauBordMecano = () => {
           </Card>
         </Col>
       </Row>
+
+      <Row className="mb-4">
+        <Col>
+          <Card>
+            <Card.Header className="bg-info text-white">
+              <FontAwesomeIcon icon={faTasks} className="me-2" />
+              Historique des Rendez-vous Traités
+            </Card.Header>
+            <Card.Body>
+              <div className="table-responsive">
+                <Table striped hover>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Client</th>
+                      <th>Véhicule</th>
+                      <th>Service</th>
+                      <th>Statut</th>
+                      <th>Durée</th>
+                      <th>Montant</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rendezVous
+                      .filter(rdv => 
+                        rdv.mecanicienId === user?.id && 
+                        (rdv.status === 'accepté' || rdv.status === 'refusé' || rdv.status === 'terminé' || rdv.status === 'payé')
+                      )
+                      .sort((a, b) => new Date(b.date) - new Date(a.date))
+                      .map(rdv => (
+                        <tr key={rdv.id}>
+                          <td>{new Date(rdv.date).toLocaleDateString()} à {rdv.heure}</td>
+                          <td>{rdv.userName}</td>
+                          <td>{rdv.vehiculeInfo.marque} {rdv.vehiculeInfo.modele}</td>
+                          <td>{rdv.motif}</td>
+                          <td>
+                            <Badge bg={
+                              rdv.status === 'accepté' ? 'success' :
+                              rdv.status === 'refusé' ? 'danger' : 
+                              rdv.status === 'payé' ? 'info' :
+                              'primary'
+                            }>
+                              {rdv.status}
+                            </Badge>
+                          </td>
+                          <td>{rdv.details?.dureeEstimee || '-'}</td>
+                          <td>{rdv.details?.coutEstime ? `${rdv.details.coutEstime} CAD` : '-'}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </Table>
+                {rendezVous.filter(rdv => 
+                  rdv.mecanicienId === user?.id && 
+                  (rdv.status === 'accepté' || rdv.status === 'refusé' || rdv.status === 'terminé' || rdv.status === 'payé')
+                ).length === 0 && (
+                  <Alert variant="info" className="text-center">
+                    Aucun rendez-vous traité pour le moment
+                  </Alert>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
       {/* deux boutons pour ajouter des disponibilites et voir les factures et benefices */}
       <Row className="mt-4">
         <Col className="d-flex justify-content-center gap-3">

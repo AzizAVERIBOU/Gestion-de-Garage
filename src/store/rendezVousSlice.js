@@ -58,6 +58,56 @@ const rendezVousSlice = createSlice({
     // pour definir une erreur
     definirErreur: (state, action) => {
       state.error = action.payload;
+    },
+
+    mettreAJourRendezVous: (state, action) => {
+      console.log('15. Reducer mettreAJourRendezVous - Payload reçu:', action.payload);
+      const index = state.rendezVous.findIndex(rdv => rdv.id === action.payload.id);
+      console.log('16. Index du rendez-vous trouvé:', index);
+      
+      if (index !== -1) {
+        state.rendezVous[index] = action.payload;
+        console.log('17. Rendez-vous mis à jour dans le state');
+      } else {
+        console.log('18. ERREUR: Rendez-vous non trouvé dans le state');
+      }
+      
+      console.log('19. État final des rendez-vous:', state.rendezVous);
+    },
+
+    demanderModificationRendezVous: (state, action) => {
+      const { id, modifications } = action.payload;
+      const rdv = state.rendezVous.find(r => r.id === id);
+      
+      if (rdv) {
+        rdv.status = 'modification_en_attente';
+        rdv.modifications = modifications;
+        rdv.dateDemandeModification = new Date().toISOString();
+      }
+    },
+
+    approuverModificationRendezVous: (state, action) => {
+      const { id } = action.payload;
+      const rdv = state.rendezVous.find(r => r.id === id);
+      
+      if (rdv && rdv.modifications) {
+        Object.assign(rdv, rdv.modifications);
+        rdv.status = 'accepté';
+        delete rdv.modifications;
+        delete rdv.dateDemandeModification;
+      }
+    },
+
+    refuserModificationRendezVous: (state, action) => {
+      const { id, raisonRefus } = action.payload;
+      const rdv = state.rendezVous.find(r => r.id === id);
+      
+      if (rdv) {
+        rdv.status = 'accepté'; // Retour au statut précédent
+        rdv.raisonRefusModification = raisonRefus;
+        delete rdv.modifications;
+        delete rdv.dateDemandeModification;
+      }
     }
   }
 });
@@ -68,7 +118,11 @@ export const {
   mettreAJourStatutRendezVous,
   annulerRendezVous,
   definirChargement,
-  definirErreur
+  definirErreur,
+  mettreAJourRendezVous,
+  demanderModificationRendezVous,
+  approuverModificationRendezVous,
+  refuserModificationRendezVous
 } = rendezVousSlice.actions;
 
   // on selectionne tous les rendez-vous

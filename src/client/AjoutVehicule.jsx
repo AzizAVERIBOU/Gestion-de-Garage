@@ -103,6 +103,7 @@ const AjoutVehicule = () => {
       modele: ''
     }));
 
+    // Debounce la recherche
     if (window.searchTimeout) {
       clearTimeout(window.searchTimeout);
     }
@@ -111,7 +112,7 @@ const AjoutVehicule = () => {
       if (value.length >= 2) {
         dispatch(fetchMarques(value));
       }
-    }, 200);
+    }, 300);
   };
 
   // on recupere la valeur de la marque et on la met dans le state
@@ -122,11 +123,10 @@ const AjoutVehicule = () => {
       modele: ''
     }));
 
-    setSuggestions(prev => ({
-      ...prev,
-      marques: []
-    }));
-
+    // Vider les suggestions de marques immédiatement
+    dispatch({ type: 'vehicule/fetchMarques/fulfilled', payload: [] });
+    
+    // Récupérer les modèles pour la marque sélectionnée
     dispatch(fetchModeles(marque));
   };
 
@@ -258,7 +258,7 @@ const AjoutVehicule = () => {
                                     <FontAwesomeIcon icon={faSpinner} spin />
                                   </div>
                                 )}
-                                {suggestions.marques.length > 0 && (
+                                {marques?.length > 0 && vehicule.marque && (
                                   <div className="suggestions-container position-absolute w-100 mt-1 bg-white border rounded shadow-sm">
                                     {marques.map((marque, index) => (
                                       <div
@@ -282,9 +282,9 @@ const AjoutVehicule = () => {
                                 value={vehicule.modele}
                                 onChange={(e) => setVehicule({...vehicule, modele: e.target.value})}
                                 required
-                                disabled={!vehicule.marque || modeles.length === 0}
+                                disabled={!vehicule.marque || stateLoading}
                               >
-                                <option value="">Sélectionnez le modèle de votre véhicule</option>
+                                <option value="">Sélectionnez le modèle</option>
                                 {modeles.map((modele, index) => (
                                   <option key={index} value={modele}>
                                     {modele}

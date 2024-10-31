@@ -1,0 +1,18 @@
+.rendez-vous-list {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.badge {
+  font-size: 0.9em;
+  padding: 8px 12px;
+} 

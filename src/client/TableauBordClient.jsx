@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faCar, faSignOutAlt, faUser, faEdit, faCreditCard, faFileInvoice, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { mettreAJourUtilisateur, deconnexion } from '../store/userSlice';
 import { supprimerVehicule } from '../store/vehiculeSlice';
-import { selectionnerRendezVousParUtilisateur, annulerRendezVous } from '../store/rendezVousSlice';
+import { selectionnerRendezVousParUtilisateur, annulerRendezVous, mettreAJourRendezVous, demanderModificationRendezVous, approuverModificationRendezVous, refuserModificationRendezVous } from '../store/rendezVousSlice';
 import { selectionnerFacturesParUtilisateur } from '../store/factureSlice';
+import { selectionnerToutesLesDisponibilites } from '../store/disponibiliteSlice';
 import '../styles/TableauBordClient.css';
 import '../styles/Dashboard.css';
 
@@ -17,13 +18,23 @@ const TableauBordClient = () => {
   const utilisateur = useSelector(state => state.utilisateur.utilisateurCourant);
   const [afficherModalEdition, setAfficherModalEdition] = useState(false);
   const [utilisateurModifie, setUtilisateurModifie] = useState(null);
-  
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [rdvToEdit, setRdvToEdit] = useState(null);
+  const [editForm, setEditForm] = useState({
+    date: '',
+    heure: '',
+    motif: '',
+    description: ''
+  });
+  const [creneauxDisponibles, setCreneauxDisponibles] = useState([]);
+
   const vehicules = useSelector(state => 
     state.vehicule.vehicules.filter(v => v.userId === utilisateur?.id)
   );
   
   const rendezVous = useSelector(state => selectionnerRendezVousParUtilisateur(state, utilisateur?.id));
   const factures = useSelector(state => selectionnerFacturesParUtilisateur(state, utilisateur?.id));
+  const disponibilites = useSelector(selectionnerToutesLesDisponibilites);
 
   useEffect(() => {
     if (!utilisateur) {
@@ -62,6 +73,65 @@ const TableauBordClient = () => {
   const rendezVousAPayer = rendezVous.filter(rdv => 
     rdv.status === 'accepté' && rdv.details?.coutEstime && !rdv.facture
   );
+
+  const handleEditClick = (rdv) => {
+    console.log('1. Début handleEditClick - RDV reçu:', rdv);
+    setRdvToEdit(rdv);
+    
+    const creneauxMecanicien = disponibilites[rdv.mecanicienId] || {};
+    console.log('2. Créneaux du mécanicien récupérés:', creneauxMecanicien);
+    
+    const tousLesCreneaux = Object.keys(creneauxMecanicien).reduce((acc, date) => {
+      acc[date] = [...(creneauxMecanicien[date] || [])];
+      return acc;
+    }, {});
+
+    if (!tousLesCreneaux[rdv.date]) {
+      tousLesCreneaux[rdv.date] = [];
+    }
+
+    if (!tousLesCreneaux[rdv.date].includes(rdv.heure)) {
+      tousLesCreneaux[rdv.date] = [...tousLesCreneaux[rdv.date], rdv.heure].sort();
+    }
+
+    console.log('5. Créneaux finaux disponibles:', tousLesCreneaux);
+    setCreneauxDisponibles(tousLesCreneaux);
+    
+    setEditForm({
+      date: rdv.date,
+      heure: rdv.heure,
+      motif: rdv.motif,
+      description: rdv.description || ''
+    });
+    
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = () => {
+    if (!editForm.date || !editForm.heure || !editForm.motif) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    const modifications = {
+      ...rdvToEdit,
+      ...editForm
+    };
+
+    dispatch(demanderModificationRendezVous({
+      id: rdvToEdit.id,
+      modifications: modifications
+    }));
+
+    setShowEditModal(false);
+    setRdvToEdit(null);
+    setEditForm({
+      date: '',
+      heure: '',
+      motif: '',
+      description: ''
+    });
+  };
 
   if (!utilisateur) {
     return (
@@ -201,15 +271,26 @@ const TableauBordClient = () => {
                             </div>
                           )}
                         </div>
-                        {rdv.status === 'planifié' && (
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => gererAnnulationRendezVous(rdv.id)}
-                            title="Annuler le rendez-vous"
-                          >
-                            <FontAwesomeIcon icon={faTimes} />
-                          </Button>
+                        {(rdv.status === 'planifié' || rdv.status === 'accepté') && !rdv.facture && (
+                          <div className="btn-group">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => handleEditClick(rdv)}
+                              className="me-1"
+                              disabled={rdv.status === 'modification_en_attente'}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </Button>
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() => gererAnnulationRendezVous(rdv.id)}
+                              disabled={rdv.status === 'modification_en_attente'}
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -377,6 +458,100 @@ const TableauBordClient = () => {
           </Button>
           <Button variant="primary" onClick={gererSauvegarde}>
             Enregistrer
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modifier le rendez-vous</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Date</Form.Label>
+              <Form.Select
+                value={editForm.date}
+                onChange={(e) => {
+                  console.log('7. Changement de date sélectionnée:', e.target.value);
+                  console.log('8. Créneaux disponibles pour cette date:', creneauxDisponibles[e.target.value]);
+                  setEditForm({
+                    ...editForm,
+                    date: e.target.value,
+                    heure: ''
+                  });
+                }}
+                required
+              >
+                <option value="">Sélectionnez une date</option>
+                {Object.keys(creneauxDisponibles)
+                  .sort((a, b) => new Date(a) - new Date(b))
+                  .map(date => (
+                    <option key={date} value={date}>
+                      {new Date(date).toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </option>
+                  ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Heure</Form.Label>
+              <Form.Select
+                value={editForm.heure}
+                onChange={(e) => {
+                  console.log('9. Changement d\'heure sélectionnée:', e.target.value);
+                  setEditForm({...editForm, heure: e.target.value});
+                }}
+                required
+                disabled={!editForm.date}
+              >
+                <option value="">Sélectionnez une heure</option>
+                {editForm.date && creneauxDisponibles[editForm.date]?.sort().map(heure => (
+                  <option key={heure} value={heure}>
+                    {heure}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Motif</Form.Label>
+              <Form.Select
+                value={editForm.motif}
+                onChange={(e) => setEditForm({...editForm, motif: e.target.value})}
+                required
+              >
+                <option value="">Sélectionnez un motif</option>
+                <option value="Révision">Révision</option>
+                <option value="Réparation">Réparation</option>
+                <option value="Entretien">Entretien</option>
+                <option value="Diagnostic">Diagnostic</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Description (optionnel)</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={editForm.description}
+                onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                placeholder="Décrivez votre problème ou besoin..."
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Annuler
+          </Button>
+          <Button variant="primary" onClick={handleEditSubmit}>
+            Enregistrer les modifications
           </Button>
         </Modal.Footer>
       </Modal>

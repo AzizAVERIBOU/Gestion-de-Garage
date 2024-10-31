@@ -73,13 +73,12 @@ const FacturesBenefices = () => {
                     <th>Service</th>
                     <th>Montant Total</th>
                     <th>Vos Bénéfices</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {factures.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="text-center">
+                      <td colSpan="6" className="text-center">
                         Aucune facture disponible
                       </td>
                     </tr>
@@ -92,12 +91,6 @@ const FacturesBenefices = () => {
                         <td>{facture.service}</td>
                         <td>{parseFloat(facture.montantTotal || 0).toFixed(2)} CAD</td>
                         <td>{parseFloat(facture.montantMecanicien || 0).toFixed(2)} CAD</td>
-                        <td>
-                          <Button variant="outline-primary" size="sm">
-                            <FontAwesomeIcon icon={faDownload} className="me-1" />
-                            Télécharger
-                          </Button>
-                        </td>
                       </tr>
                     ))
                   )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Table, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileInvoice, faArrowLeft, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faFileInvoice, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectionnerFacturesParUtilisateur } from '../store/factureSlice';
@@ -49,13 +49,12 @@ const Factures = () => {
                     <th>Service</th>
                     <th>Montant</th>
                     <th>Statut</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {factures.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="text-center">
+                      <td colSpan="6" className="text-center">
                         Aucune facture disponible
                       </td>
                     </tr>
@@ -73,16 +72,6 @@ const Factures = () => {
                           <span className={`badge bg-${facture.status === 'payée' ? 'success' : 'warning'}`}>
                             {facture.status}
                           </span>
-                        </td>
-                        <td>
-                          <Button 
-                            variant="outline-primary" 
-                            size="sm"
-                            onClick={() => window.print()}
-                          >
-                            <FontAwesomeIcon icon={faDownload} className="me-1" />
-                            Télécharger
-                          </Button>
                         </td>
                       </tr>
                     ))
