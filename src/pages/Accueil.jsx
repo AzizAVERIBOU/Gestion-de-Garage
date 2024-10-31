@@ -22,9 +22,9 @@ const Accueil = () => {
                   Nous vous proposons de vous connecter ou de vous inscrire pour accéder à nos services.
                 </p>
               </div>
-
+              {/*mes boutons pour la connexion et inscription */}
               <div className="d-grid gap-3">
-                <Button 
+                <Button  
                   variant="primary" 
                   size="lg"
                   onClick={() => navigate('/connexion')}

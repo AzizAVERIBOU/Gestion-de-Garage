@@ -15,7 +15,7 @@ const FacturesBenefices = () => {
     )
   );
 
-  // Calculer les totaux
+  // methode pour calculer combien gagne le mecanicien
   const totaux = factures.reduce((acc, facture) => ({
     montantTotal: acc.montantTotal + parseFloat(facture.montantTotal || 0),
     montantMecanicien: acc.montantMecanicien + parseFloat(facture.montantMecanicien || 0)
@@ -25,18 +25,19 @@ const FacturesBenefices = () => {
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={10}>
-          <Button 
+          <Button //bouton pour retourner au tableau de bord
             variant="link" 
             className="mb-4"
             onClick={() => navigate('/mecanicien/tableau-de-bord')}
           >
             <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
-            Retour au tableau de bord
+            Retour au tableau de bord 
           </Button>
 
           <Row className="mb-4">
-            <Col>
-              <Card>
+            <Col> 
+              {/* card bootstrap pour afficher le resume des benefices */}
+              <Card> 
                 <Card.Header className="bg-success text-white">
                   <FontAwesomeIcon icon={faChartLine} className="me-2" />
                   Résumé des bénéfices

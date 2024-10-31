@@ -33,6 +33,8 @@ const AjoutDisponibilite = () => {
       return;
     }
 
+    // nous avons definis ces plages horaires pour faciliter la gestion des disponibilites au niveau des horaires
+    // comme ca on peut utiliser les fonctionnalite de cliquer sur une plage horaire pour ajouter une disponibilite
     let creneaux = [];
     if (plageHoraire.plage === 'matin') {
       creneaux = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];
@@ -58,7 +60,7 @@ const AjoutDisponibilite = () => {
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8}>
-          <Button 
+          <Button  //bouton pour retourner au tableau de bord
             variant="link" 
             className="mb-4"
             onClick={() => navigate('/mecanicien/tableau-de-bord')}
@@ -66,8 +68,8 @@ const AjoutDisponibilite = () => {
             <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
             Retour au tableau de bord
           </Button>
-
-          <Card>
+          {/* card bootstrap pour ajouter des disponibilites */}
+          <Card>  
             <Card.Header className="bg-primary text-white">
               <FontAwesomeIcon icon={faCalendar} className="me-2" />
               Ajouter des disponibilités

@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+// Créer un thème personnalisé
+
 export const initializeTheme = createAsyncThunk(
   'theme/initialize',
   async () => {
@@ -9,7 +11,7 @@ export const initializeTheme = createAsyncThunk(
         primary: '#1a237e',
         secondary: '#455a64',
         success: '#1b5e20',
-        // ... autres couleurs
+        
       },
       styles: `
         body {
@@ -20,7 +22,7 @@ export const initializeTheme = createAsyncThunk(
       `
     };
     
-    // Appliquer les styles
+    
     const style = document.createElement('style');
     style.textContent = theme.styles;
     document.head.appendChild(style);
@@ -28,6 +30,7 @@ export const initializeTheme = createAsyncThunk(
     return theme;
   }
 );
+
 
 const themeSlice = createSlice({
   name: 'theme',
@@ -37,18 +40,18 @@ const themeSlice = createSlice({
     error: null
   },
   reducers: {
-    // Autres actions pour modifier le thème
+    
   },
-  extraReducers: (builder) => {
+  extraReducers: (builder) => {  // Redéfinir les états de chargement et d'erreur
     builder
-      .addCase(initializeTheme.pending, (state) => {
+      .addCase(initializeTheme.pending, (state) => {  // Gestion du chargement
         state.loading = true;
       })
       .addCase(initializeTheme.fulfilled, (state, action) => {
         state.loading = false;
         state.colors = action.payload.colors;
       })
-      .addCase(initializeTheme.rejected, (state, action) => {
+      .addCase(initializeTheme.rejected, (state, action) => {  // Gestion de l'erreur
         state.loading = false;
         state.error = action.error.message;
       });

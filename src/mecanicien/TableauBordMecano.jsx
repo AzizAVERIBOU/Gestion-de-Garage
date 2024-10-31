@@ -49,7 +49,7 @@ const TableauBordMecano = () => {
     coutEstime: ''
   });
 
-  // Vérifier si l'utilisateur est connecté
+  // on verifie si l'utilisateur est connecté
   useEffect(() => {
     if (!user) {
       navigate('/connexion');
@@ -59,14 +59,14 @@ const TableauBordMecano = () => {
   const handleSavePlage = () => {
     let creneaux = [];
     
-    // Générer les créneaux selon la plage horaire
+    // on genere les creneaux selon la plage horaire
     if (plageHoraire.plage === 'matin') {
       creneaux = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];
     } else {
       creneaux = ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
     }
 
-    // Créer une nouvelle copie des disponibilités
+    // on cree une nouvelle copie des disponibilites
     const newDisponibilites = {
       ...disponibilites,
       [user.id]: {
@@ -79,13 +79,13 @@ const TableauBordMecano = () => {
     setShowDispoModal(false);
   };
 
-  // Fonction pour formater les disponibilités
+  // fonction pour formater les disponibilites pour pouvoir afficher 
   const getDisponibilitesFormatees = () => {
     if (!user || !disponibilites || !disponibilites[user.id]) {
       return [];
     }
 
-    // Créer une copie profonde des données pour éviter les problèmes de mutation
+    // on cree une copie profonde des donnees pour eviter les problemes de mutation
     return Object.entries({...disponibilites[user.id]})
       .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
       .map(([date, creneaux]) => ({
@@ -94,12 +94,12 @@ const TableauBordMecano = () => {
       }));
   };
 
-  // Filtrer les rendez-vous pour ce mécanicien qui sont en attente
+  // on filtre les rendez-vous du mecanicien connecte qui sont en attente
   const rendezVousEnAttente = rendezVous.filter(rdv => 
     rdv.mecanicienId === user?.id && rdv.status === 'planifié'
   );
 
-  const handleAcceptRendezVous = (rdvId) => {
+  const handleAcceptRendezVous = (rdvId) => { // fonction pour accepter un rendez-vous avec l'id du rendez-vous
     dispatch(mettreAJourStatutRendezVous({
       id: rdvId,
       status: 'accepté'
@@ -117,7 +117,7 @@ const TableauBordMecano = () => {
 
   const handleRefuseClick = (rdv) => {
     setSelectedRdv(rdv);
-    setShowRefusModal(true);
+    setShowRefusModal(true); //pour afficher la modal de refus
   };
 
   const handleAcceptClick = (rdv) => {
@@ -162,7 +162,7 @@ const TableauBordMecano = () => {
     setSelectedRdv(null);
   };
 
-  // Afficher un loader pendant la vérification de l'utilisateur
+  // si l'utilisateur n'est pas connecte, on affiche un loader 
   if (!user) {
     return (
       <Container className="py-5">
@@ -200,7 +200,7 @@ const TableauBordMecano = () => {
       </Row>
 
       <Row>
-        {/* Informations du mécanicien à gauche */}
+        {/* card bootstrap pour afficher les informations du mecanicien */}
         <Col md={4}>
           <Card className="mb-4">
             <Card.Header className="bg-secondary text-white">
@@ -225,7 +225,7 @@ const TableauBordMecano = () => {
           </Card>
         </Col>
 
-        {/* Rendez-vous en attente au milieu */}
+        {/* card bootstrap pour afficher les rendez-vous en attente */}
         <Col md={4}>
           <Card className="mb-4">
             <Card.Header className="bg-warning text-white">
@@ -291,7 +291,7 @@ const TableauBordMecano = () => {
           </Card>
         </Col>
 
-        {/* Horaires à droite */}
+        {/* card bootstrap pour afficher les horaires du mecanicien */}
         <Col md={4}>
           <Card className="mb-4">
             <Card.Header className="bg-success text-white">
@@ -334,7 +334,7 @@ const TableauBordMecano = () => {
           </Card>
         </Col>
       </Row>
-
+      {/* deux boutons pour ajouter des disponibilites et voir les factures et benefices */}
       <Row className="mt-4">
         <Col className="d-flex justify-content-center gap-3">
           <Button 
@@ -400,18 +400,15 @@ const TableauBordMecano = () => {
               <option value="">Sélectionnez une durée</option>
               <option value="30min">30 minutes</option>
               <option value="1h">1 heure</option>
+              <option value="1h30">1h30</option>
               <option value="2h">2 heures</option>
+              <option value="2h30">2h30</option>
               <option value="3h">3 heures</option>
-              <option value="4h">4 heures</option>
-              <option value="1j">1 jour</option>
-              <option value="2j">2 jours</option>
-              <option value="3j">3 jours</option>
-              <option value="+3j">Plus de 3 jours</option>
             </Form.Select>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Coût estimé (CAD)</Form.Label>
+            <Form.Label>montant a payer (CAD)</Form.Label>
             <Form.Control
               type="number"
               min="0"

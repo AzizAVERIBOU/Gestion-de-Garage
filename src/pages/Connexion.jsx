@@ -18,7 +18,7 @@ const Connexion = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Récupérer les utilisateurs stockés
+  // on recupere les utilisateurs stockes dans le local storage pour pouvoir les utiliser dans la connexion
   const storedUsers = JSON.parse(localStorage.getItem('storedUsers') || '[]');
 
   const handleSubmit = async (e) => {
@@ -41,7 +41,7 @@ const Connexion = () => {
       return;
     }
 
-    // Vérifier dans le store
+    // ici on verifie si l'utilisateur existe deja dans le local storage sinon en recuperant les donnees de l'api les changerons en client ne persistant pas
     const storedUser = storedUsers.find(user => user.username === username);
 
     if (storedUser) {
@@ -63,7 +63,7 @@ const Connexion = () => {
         })
       });
 
-      const data = await response.json();
+      const data = await response.json(); 
 
       if (response.ok) {
         const newUser = { ...data, type: 'client' };

@@ -7,16 +7,26 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ajouterVehicule } from '../store/vehiculeSlice';
 import '../styles/AjoutVehicule.css';
 
-// Cache pour stocker les résultats des recherches
-const marqueCache = new Map();
-const modeleCache = new Map();
+// Le système de cache est utilisé pour optimiser les performances lors des recherches de véhicules
+// Quand un utilisateur recherche une marque ou un modèle :
+// 1. On vérifie d'abord si cette recherche existe déjà dans le cache
+// 2. Si oui, on retourne directement les résultats stockés, évitant ainsi un appel API
+// 3. Si non, on fait l'appel API et on stocke les résultats dans le cache pour les futures recherches
+// Avantages :
+// - Réduction du nombre d'appels API
+// - Réponses plus rapides pour les recherches répétées
+// - Meilleure expérience utilisateur
+// - Économie de bande passante
+// Le cache est temporaire et existe uniquement pendant la session de l'utilisateur
+const marqueCache = new Map();  // Cache pour stocker les résultats de recherche des marques
+const modeleCache = new Map();  // Cache pour stocker les résultats de recherche des modèles
 
 const AjoutVehicule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.utilisateur.utilisateurCourant);
 
-  // Vérifier si l'utilisateur est connecté
+  // on verifie si l'utilisateur est connecte
   useEffect(() => {
     if (!user) {
       navigate('/connexion');
@@ -95,16 +105,17 @@ const AjoutVehicule = () => {
     navigate('/client/tableau-de-bord');
   };
 
-  // Fonction optimisée pour récupérer les marques
+  // Fonction optimisée pour récupérer les marques avec système de cache
   const fetchMarques = async (searchTerm) => {
     if (searchTerm.length < 2) {
       setSuggestions({ ...suggestions, marques: [] });
       return;
     }
 
-    // Vérifier le cache
+    // Vérifier si la recherche existe déjà dans le cache
     const cacheKey = searchTerm.toLowerCase();
     if (marqueCache.has(cacheKey)) {
+      // Si oui, utiliser les données du cache au lieu de faire un appel API
       setSuggestions({
         ...suggestions,
         marques: marqueCache.get(cacheKey)
@@ -112,6 +123,7 @@ const AjoutVehicule = () => {
       return;
     }
 
+    // Si non, faire l'appel API et stocker le résultat dans le cache
     setIsLoading(true);
     try {
       const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes?format=json`);
@@ -124,7 +136,7 @@ const AjoutVehicule = () => {
           .slice(0, 8) // Limiter à 8 suggestions pour plus de rapidité
           .map(item => item.Make_Name);
 
-        // Mettre en cache les résultats
+        // Stocker les résultats dans le cache pour les futures recherches
         marqueCache.set(cacheKey, filteredMakes);
         setSuggestions({
           ...suggestions,

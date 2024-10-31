@@ -33,10 +33,14 @@ const Inscription = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logique d'inscription à implémenter
+    //ici on a pas ajouter la logique d'inscription parce que on utilise deja 
+    //les donnees de l'api pour connecter les clients et on a creer un fichier 
+    //js ou on a mit des mecanos pour se connecter si la personne qui essaie de 
+    //se connecter coche le checkbox pour montrer qu'il se connecte comme un mecanicien
   };
 
   return (
+    // on a ajouter le formulaire pour l'inscription en utilisant bootstrap
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
